@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡密的拼豆辅助工具</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 页面容器 -->
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-brand">
+                    <h1>卡密的拼豆转换器</h1>
+                    <p>测试</p>
+                </div>
+                <ul class="navbar-menu">
+                    <li><a href="#home" class="nav-link active">首页</a></li>
+
+                    <li><a href="#profile" class="nav-link">我的</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 首页 -->
+            <section id="home" class="page-section active">
+                <div class="home-content">
+                    <!-- 上传区域 -->
+                    <section class="upload-section">
+                        <div class="upload-btn">
+                            <input type="file" id="imageUpload" accept="image/*">
+                            <label for="imageUpload">上传图片</label>
+                        </div>
+                    </section>
+
+                    <!-- 控制选项区域 -->
+                    <section class="controls-section">
+                        <div class="control-group">
+                            <h3>网格设置</h3>
+                            
+                            <!-- 智能识别预设 -->
+                            <div class="preset-controls">
+                                <label>智能识别:</label>
+                                <div class="preset-buttons">
+                                    <button class="preset-btn" data-preset="40x40">预设1</button>
+                                    <button class="preset-btn" data-preset="50x50">预设2</button>
+                                    <button class="preset-btn" data-preset="60x60">预设3</button>
+                                </div>
+                            </div>
+
+                            <!-- 像素块数量设置 -->
+                            <div class="pixel-size-control">
+                                <label>像素块数量:</label>
+                                <div class="pixel-size-inputs">
+                                    <input type="number" id="pixelWidth" min="10" max="200" value="50">
+                                    <span>×</span>
+                                    <input type="number" id="pixelHeight" min="10" max="200" value="50">
+                                </div>
+                            </div>
+
+                            <!-- 显示网格开关 -->
+                            <div class="toggle-control">
+                                <label for="showGrid">显示网格:</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="showGrid" checked>
+                                    <label class="toggle-label" for="showGrid"></label>
+                                </div>
+                            </div>
+
+                            <!-- 原图对比控制 -->
+                            <div class="opacity-control">
+                            <label for="originalOpacity">原图透明度:</label>
+                            <input type="range" id="originalOpacity" min="0" max="100" value="100">
+                            <span id="opacityValue">100%</span>
+                        </div>
+                        
+                        <!-- 背景去除选项 -->
+                        <div class="remove-bg-control">
+                            <label for="removeBg">去除背景:</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="removeBg">
+                                <label class="toggle-label" for="removeBg"></label>
+                            </div>
+                        </div>
+                        </div>
+                    </section>
+
+                    <!-- 显示区域 -->
+                    <section class="display-section">
+                        <div class="image-container">
+                            <canvas id="originalCanvas" class="original-canvas"></canvas>
+                            <canvas id="pixelatedCanvas" class="pixelated-canvas"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- 下一步按钮 -->
+                    <section class="next-step-section">
+                        <button id="nextStepBtn" class="next-step-btn" disabled>下一步</button>
+                    </section>
+                </div>
+            </section>
+
+            <!-- 生成结果页面 -->
+            <section id="result" class="page-section">
+                <div class="result-content">
+                    <h2>拼豆图纸</h2>
+                    <div class="result-container">
+                        <!-- 像素化图像展示 -->
+                        <div class="result-image-section">
+                            <canvas id="resultCanvas"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 像素块数量调整控件 -->
+                    <div class="pixel-adjust-section">
+                        <h3>调整像素块数量</h3>
+                        <div class="pixel-slider-container">
+                            <label for="pixelCountX">横向像素块数: <span id="pixelCountXValue">50</span></label>
+                            <input type="range" id="pixelCountX" min="10" max="200" value="50" class="pixel-slider">
+                        </div>
+                        <div class="pixel-slider-container">
+                            <label for="pixelCountY">纵向像素块数: <span id="pixelCountYValue">50</span></label>
+                            <input type="range" id="pixelCountY" min="10" max="200" value="50" class="pixel-slider">
+                        </div>
+                        
+                        <!-- 原图透明度控制 -->
+                        <div class="opacity-control">
+                            <label for="resultOriginalOpacity">原图透明度: <span id="resultOpacityValue">100</span>%</label>
+                            <input type="range" id="resultOriginalOpacity" min="0" max="100" value="100" class="opacity-slider">
+                        </div>
+                        
+                        <!-- 背景去除选项 -->
+                    <div class="remove-bg-control">
+                        <label for="resultRemoveBg">去除背景:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="resultRemoveBg">
+                            <label class="toggle-label" for="resultRemoveBg"></label>
+                        </div>
+                    </div>
+                    
+                    <!-- 显示/隐藏色号选项 -->
+                    <div class="toggle-control">
+                        <label for="showColorLabels">显示色号:</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="showColorLabels" checked>
+                            <label class="toggle-label" for="showColorLabels"></label>
+                        </div>
+                    </div>
+                    
+                    <!-- 图纸缩放控制 -->
+                    <div class="zoom-control">
+                        <label for="zoomSlider">图纸缩放: <span id="zoomLevelValue">100</span>%</label>
+                        <input type="range" id="zoomSlider" min="50" max="300" value="100" class="zoom-slider">
+                    </div>
+                    
+                    <!-- 辅助线设置 -->
+                    <div class="grid-settings">
+                        <div class="grid-settings-header">
+                            <h3>辅助线设置</h3>
+                            <span class="grid-settings-toggle">▼</span>
+                        </div>
+                        <div class="grid-settings-content">
+                            <!-- 显示辅助线开关 -->
+                            <div class="toggle-control">
+                                <label for="showGridLines">显示辅助线:</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="showGridLines">
+                                    <label class="toggle-label" for="showGridLines"></label>
+                                </div>
+                            </div>
+                            
+                            <!-- 尺寸选择 -->
+                            <div class="select-control">
+                                <label for="gridSize">尺寸:</label>
+                                <select id="gridSize" class="select-input">
+                                    <option value="5x5">5×5</option>
+                                    <option value="10x10">10×10</option>
+                                    <option value="15x15">15×15</option>
+                                    <option value="20x20">20×20</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 起始位置选择 -->
+                            <div class="select-control">
+                                <label for="gridStartPos">起始位置:</label>
+                                <select id="gridStartPos" class="select-input">
+                                    <option value="top-left">左上角</option>
+                                    <option value="center">中心</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 辅助线颜色选择 -->
+                            <div class="color-control">
+                                <label for="gridColor">辅助线颜色:</label>
+                                <input type="color" id="gridColor" value="#ff0000" class="color-picker">
+                            </div>
+                            
+                            <!-- 辅助线粗细调节 -->
+                            <div class="slider-control">
+                                <label for="gridThickness">粗细: <span id="gridThicknessValue">2</span></label>
+                                <input type="range" id="gridThickness" min="1" max="5" value="2" class="slider-input">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- 独立的颜色库板块 -->
+                    <div class="color-library-section">
+                        <div class="color-library-header">
+                            <h3>颜色库</h3>
+                            <div class="color-library-name">
+                                <input type="text" id="colorLibraryName" placeholder="自定义颜色库名称">
+                                <button id="saveLibraryName" class="save-btn">保存</button>
+                            </div>
+                        </div>
+                        <div class="color-grid" id="colorGrid"></div>
+                    </div>
+                    
+                    <!-- 颜色数量统计板块 -->
+                    <div class="color-stats-section">
+                        <h3>使用材料</h3>
+                        <div class="stats-grid" id="statsGrid"></div>
+                        <div class="total-count">
+                            <span>总珠子数: </span>
+                            <span id="totalCount">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="result-actions">
+                        <button id="backBtn" class="back-btn">返回首页</button>
+                        <button id="downloadBtn" class="download-btn">下载图纸</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 用户中心页面 -->
+            <section id="profile" class="page-section">
+                <div class="profile-content">
+                    <h2>我的账号</h2>,
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <canvas width="100" height="100"></canvas>
+                        </div>
+                        <div class="profile-details">
+                            <h3>游客用户</h3>
+                            <p>欢迎使用豆猫棒拼豆辅助工具！</p>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label">历史记录</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 功能模块 -->
+                    <div class="profile-modules">
+                        
+                        <!-- 设置选项 -->
+                        <div class="profile-module">
+                            <h3>设置</h3>
+                            <div class="settings-options">
+                                <div class="setting-item">
+                                    <label for="setting2">通知提醒</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="setting2">
+                                        <label class="toggle-label" for="setting2"></label>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="setting3">深色模式</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="setting3">
+                                        <label class="toggle-label" for="setting3"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 关于我们 -->
+                        <div class="profile-module">
+                            <h3>关于我们</h3>
+                            <div class="about-content">
+                                <p>版本号: v1.0.0</p>
+                                <p>作者: 卡密</p>
+                                <p>联系方式: example@example.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 脚本文件 -->
+    <script src="script.js"></script>
+</body>
+</html>

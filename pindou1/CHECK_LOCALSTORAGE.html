@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查看颜色库数据</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .data-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .color-item { display: flex; align-items: center; margin: 5px 0; }
+        .color-preview { width: 20px; height: 20px; margin-right: 10px; border: 1px solid #000; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>颜色库数据存储位置检查</h1>
+    
+    <div class="data-section">
+        <h2>1. 颜色库数据结构（代码中定义）</h2>
+        <p>在 <strong>script.js</strong> 文件中，定义了颜色库的数据结构：</p>
+        <pre>
+// 代码行号：7
+let colorCategories = []; // 格式：[{id, name, colors: [{name, color}]}]
+        </pre>
+        <p>这个数组存储所有颜色分组和颜色。</p>
+    </div>
+    
+    <div class="data-section">
+        <h2>2. 数据持久化位置</h2>
+        <p>颜色库数据保存在浏览器的 <strong>localStorage</strong> 中（而非直接写在代码文件里）：</p>
+        <pre>
+// 代码行号：1036
+localStorage.setItem('colorCategories', JSON.stringify(colorCategories));
+        </pre>
+        <p>每次页面加载时，会从 localStorage 读取数据：</p>
+        <pre>
+// 代码行号：78-80
+const savedCategories = localStorage.getItem('colorCategories');
+if (savedCategories) {
+    colorCategories = JSON.parse(savedCategories);
+}
+        </pre>
+    </div>
+    
+    <div class="data-section">
+        <h2>3. 当前浏览器中的颜色数据</h2>
+        <p>点击按钮查看当前浏览器 localStorage 中保存的颜色库数据：</p>
+        <button onclick="showLocalStorageData()">查看颜色库数据</button>
+        <div id="localStorageData" style="margin-top: 15px;"></div>
+    </div>
+    
+    <div class="data-section">
+        <h2>4. 预设颜色（代码中的默认值）</h2>
+        <p>如果 localStorage 中没有数据，会使用预设颜色初始化：</p>
+        <pre>
+// 代码行号：71-73
+const presetColors = [
+    { name: "red", color: '#ff6b6b' }, { name: "orange", color: '#ee5a24' }
+];
+        </pre>
+    </div>
+    
+    <div class="data-section">
+        <h2>5. 关于 "Mard221色" 和 "A1"</h2>
+        <p>您看到的 "Mard221色" 和 "A1" 等颜色，是：</p>
+        <ol>
+            <li>通过界面添加的自定义颜色分组和颜色</li>
+            <li>保存在您当前浏览器的 localStorage 中</li>
+            <li>不会出现在原始的 script.js 文件中</li>
+        </ol>
+    </div>
+    
+    <div class="data-section">
+        <h2>6. 如何修改默认颜色库</h2>
+        <p>如果您想修改默认颜色库（添加Mard221色等），可以：</p>
+        <ol>
+            <li>修改 script.js 中的 presetColors 数组</li>
+            <li>或者清空 localStorage 后，通过界面重新添加颜色</li>
+        </ol>
+    </div>
+
+    <script>
+        function showLocalStorageData() {
+            const savedData = localStorage.getItem('colorCategories');
+            const container = document.getElementById('localStorageData');
+            
+            if (!savedData) {
+                container.innerHTML = '<p style="color: red;">localStorage 中没有颜色库数据！</p>';
+                return;
+            }
+            
+            const data = JSON.parse(savedData);
+            
+            let html = '<h3>颜色分组列表：</h3>';
+            data.forEach((category, catIndex) => {
+                html += `<div style="margin: 10px 0; padding: 10px; background: #f5f5f5;">
+                    <strong>分组 ${catIndex + 1}:</strong> ${category.name} (ID: ${category.id})<br>
+                    <strong>颜色数量:</strong> ${category.colors.length}
+                    <div style="margin-top: 10px;">`;
+                
+                category.colors.forEach((color, colorIndex) => {
+                    html += `<div class="color-item">
+                        <div class="color-preview" style="background-color: ${color.color}"></div>
+                        ${color.name}: ${color.color}
+                    </div>`;
+                });
+                
+                html += '</div></div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 自动显示数据
+        window.onload = showLocalStorageData;
+    </script>
+</body>
+</html>
